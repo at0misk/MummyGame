@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Basic Movement</title>
+	<script>
+	window.onload = function(){
+		var canvas = document.getElementById("testCanvas");
+		var context = canvas.getContext('2d');
+		var xPos = 0;
+		var yPos = 0;
+		context.rect(xPos, yPos, 50, 50);
+		context.stroke();
+		// Draws Rectangle
+		function move(e){
+			// alert(e.keyCode);
+			if (xPos == canvas.width - 50 && yPos == canvas.height - 50){
+				alert("Reached bottom corner!");
+			}
+			if (e.keyCode == 39){
+				if(xPos == canvas.width - 50){
+
+				}
+				else{
+					xPos += 5;
+				}
+			}
+			if (e.keyCode == 37){
+				if(xPos == 0){
+
+				}
+				else{
+					xPos -= 5;
+				}
+			}
+			if (e.keyCode == 38){
+				if(yPos == 0){
+
+				}
+				else{
+					yPos -= 5;
+				}
+			}
+			if (e.keyCode == 40){
+				if(yPos == canvas.height - 50){
+
+				}
+				else{
+					yPos += 5;
+				}
+			}
+			canvas.width = canvas.width;
+			context.rect(xPos, yPos, 50, 50);
+			context.stroke();
+		}
+
+		document.onkeydown = move;
+		// Draws Rectangle
+	}
+	</script>
+	<style>
+		#testCanvas{
+			outline: 1px solid black;
+		}
+	</style>
+</head>
+<body>
+	<canvas id="testCanvas" width="500" height="300"></canvas>
+</body>
+</html>
