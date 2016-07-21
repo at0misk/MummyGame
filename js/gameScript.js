@@ -1,3 +1,5 @@
+// "use strict";
+
 var firstTime = true;
 var canvas;
 var stage;
@@ -27,6 +29,12 @@ var firing = false;
 var score = 0;
 var highScore = 0;
 var ratVx = 1;
+var context;
+var ratMoveAnimation;
+var ratDeathAnimation;
+var bmpAnimationIdle;
+var bmpAnimationIdleR;
+var fireAnimation;
 
 
 if(firstTime){
@@ -55,7 +63,9 @@ window.onload = function(){
         bitmapWell.y = 100;
         stage.addChild(bitmapWell);
         stage.update();
-        // context.stroke();
+        context.stroke();
+    createjs.Ticker.on("tick", tick);
+    createjs.Ticker.off();
 };
 
 function resetStage(){
@@ -75,21 +85,48 @@ function resetStage(){
         var bitmapWell = new createjs.Bitmap(well);
         bitmapWell.x = 100;
         bitmapWell.y = 100;
+        context.clearRect(0, 0, canvas.width, canvas.height);
         stage.addChild(bitmapWell);
         stage.update();    
 }
 
-function init() {
-    ratVx = 1;
-    this.document.onkeydown = keydown;
-    this.document.onkeyup = keyup;
-    started = true;
+
+function reset() {
+    document.getElementById("Dead").innerHTML= "";
+    if(score >= highScore){
+        // ratVx = 1;
+        highScore = score;
+        document.getElementById("highScore").innerHTML = highScore;
+    }
     if(dead){
+        dead = false;
+        ratDead = false;
+        // stage.update();        
+        // init();
+        // createjs.Ticker.off();
+    }
+    score = 0;
+    document.getElementById("score").innerHTML = score;
+    stage.removeAllChildren();
+    createjs.Ticker.removeAllEventListeners();
+    // stage.update();
+    // context.clearRect(0, 0, canvas.width, canvas.height);
+    window.onload();
+}
+
+function init() {
+    if(dead){
+        reset();
+    }
+    if(started){
         reset();
     }
     else{
         document.getElementById("Dead").innerHTML= "";
-    }
+    ratVx = 1;
+    this.document.onkeydown = keydown;
+    this.document.onkeyup = keyup;
+    started = true;
     // pauseMonster = false;
     swap = true;
     canvas = document.getElementById("testCanvas");
@@ -121,39 +158,16 @@ function init() {
     imgRatDeath.onload = handleImageLoad;
     imgRatDeath.onerror = handleImageError;
     imgRatDeath.src = "rat-dying.png";
-}
-
-function reset() {
-    document.getElementById("Dead").innerHTML= "";
-    if(!dead && score >= highScore){
-        ratVx = 1;
-        highScore = score;
-        document.getElementById("highScore").innerHTML = highScore;
-    }
-    if(dead){
-        dead = false;
-        stage.removeAllChildren();
-        ratVx = 1;
-        score = 0;
-        document.getElementById("score").innerHTML= score;
-        dead = false;
-        ratDead = false;
-        stage.removeAllChildren();
-        createjs.Ticker.removeAllEventListeners();
-        stage.update();        
-        resetStage();
-        // init();
-    }
-    // ratVx = 1;
-    score = 0;
-    document.getElementById("score").innerHTML= score;
-    dead = false;
-    ratDead = false;
+    // else{
     stage.removeAllChildren();
     createjs.Ticker.removeAllEventListeners();
-    stage.update();
-    resetStage();
+    createjs.Ticker.off();
+    createjs.Ticker.on("tick", tick);
+    createjs.Ticker.useRAF = true;
+    createjs.Ticker.setFPS(60);
 }
+    // }
+};
 
 function handleImageLoad(e) {
 	// imgsLoaded++;
@@ -163,6 +177,7 @@ function handleImageLoad(e) {
 }
 
 function startGame() {
+    // firstTime = false;
     ratVx = 1;
     // started = true;
 	// create a new stage and point it at our canvas:
@@ -304,9 +319,11 @@ function startGame() {
     // we want to do some work before we update the canvas,
     // otherwise we could use Ticker.addListener(stage);
     // createjs.Ticker.addEventListener(window, tick);
+    if(started){
     createjs.Ticker.on("tick", tick);
-    createjs.Ticker.useRAF = true;
+    // createjs.Ticker.useRAF = true;
     createjs.Ticker.setFPS(60);
+    }
 }
 
 var left;
@@ -699,5 +716,5 @@ if(!dead){
     // update the stage:
     stage.update();
 }
-firstTime = false;
-};
+// firstTime = false;
+}
