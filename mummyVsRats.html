@@ -1,0 +1,101 @@
+<html>
+<head>
+<meta http-equiv='cache-control' content='no-cache'>
+<meta http-equiv='expires' content='0'>
+<meta http-equiv='pragma' content='no-cache'>
+	<title>Mummy Vs. Rats</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <style>
+        #testCanvas{
+            outline: 1px solid white;
+        }
+        body{
+            font-family: monospace;
+            background: black;
+            color: white;
+        }
+        #container{
+            margin: 0px auto;
+            margin-top: 1%;
+            height: 800px;
+            width: 500px;
+        }
+        #header{
+            display: block;
+            font-size: 3em;
+            text-align: center;
+        }
+    </style>
+	<script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
+    <style>
+        .btn.sharp{
+            border-radius: 0;
+            border-color: white;
+            color: white;
+            background: black;
+            margin-top: 10%;
+        }
+        #text p{
+            margin-top: 5%;
+        }
+        #hScoreText{
+            display: inline-block;
+            margin-left: 18%;
+        }
+        #scoreText{
+            display: inline-block;
+        }
+        #deadText{
+            color: red;
+        }
+        #instruction{
+            margin-top: 5%;
+        }
+        #rules{
+            margin-top: 5%;
+        }
+        .red{
+            color: red;
+        }
+        .logo{
+            margin: 2%;
+        }
+    </style>
+	<!-- <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script> -->
+	<script language="JavaScript" src="js/gameScript.js">
+	</script>
+</head>
+<body>
+<div id="container">
+    <span id="header">Mummy Vs. Rats</span>
+	<canvas id="testCanvas" width="500" height="300"></canvas>
+    <div class="col-md-4">
+    	<button id="Start" class="btn btn-primary btn-lg sharp center" onclick="init();">Start</button>
+    	<button id="Reset" class="btn btn-primary btn-lg sharp center" onclick="reset();">Reset</button>
+    </div>
+    <div class="col-md-8" id="text">
+    <p id="scoreText">Score: <span id="score">0</span></p>
+    <p id="hScoreText">High Score: <span id="highScore">0</span></p>
+    <p id="deadText"><span id="Dead"></span></p>
+    </div>
+    <div class="col-md-12" id="instruction">
+    <h4>Controls:</h4>
+    <p><span class="red">Move</span> with the <span class="red">arrow</span> keys, Shoot <span class="red">fireballs</span> with <span class="red">Ctrl</span></p>
+    </div>
+    <div class="col-md-12" id="rules">
+    <h4>Rules:</h4>
+    <p>If a rat hits you, you <span class="red">die</span></p>
+    <p>If a fireball hits a rat, it <span class="red">dies</span></p>
+    <p><span class="red">Killing</span> a rat earns 25 points</p>
+    <p>If a rat makes it past you, you <span class="red">loose</span> 25 points</p>
+    <p>Rats become <span class="red">faster</span> the higher your score</p>
+    <p>Fireballs only recharge:</p>
+    <ul>
+        <li>Upon <span class="red">killing</span> a rat</li>
+        <li>Fireball <span class="red">exits</span> the arena</li>
+    </ul>
+    </div>
+</div>
+<a href="http://www.kevintaylor.la"><img src="tinyLogo.png" class="logo pull-right"></a>
+</body>
+</html>

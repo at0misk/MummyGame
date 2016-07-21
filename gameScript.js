@@ -1,60 +1,6 @@
-<html>
-<head>
-	<titleSprite Rendering and Animation</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <style>
-        #testCanvas{
-            outline: 1px solid white;
-        }
-        body{
-            font-family: monospace;
-            background: black;
-            color: white;
-        }
-        #container{
-            margin: 0px auto;
-            margin-top: 5%;
-            height: 800px;
-            width: 500px;
-        }
-        #header{
-            display: block;
-            font-size: 3em;
-            text-align: center;
-        }
-    </style>
-	<script src="https://code.createjs.com/easeljs-0.8.2.min.js"></script>
-    <style>
-        .btn.sharp{
-            border-radius: 0;
-            border-color: white;
-            color: white;
-            background: black;
-            margin-top: 10%;
-        }
-        #text p{
-            margin-top: 5%;
-        }
-        #hScoreText{
-            display: inline-block;
-            margin-left: 18%;
-        }
-        #scoreText{
-            display: inline-block;
-        }
-        #deadText{
-            color: red;
-        }
-        #instruction{
-            margin-top: 5%;
-        }
-        #rules{
-            margin-top: 5%;
-        }
-    </style>
-	<!-- <script   src="https://code.jquery.com/jquery-3.1.0.min.js"   integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="   crossorigin="anonymous"></script> -->
-	<script>
-	
+// "use strict";
+
+var firstTime = true;
 var canvas;
 var stage;
 var screen_width;
@@ -83,7 +29,15 @@ var firing = false;
 var score = 0;
 var highScore = 0;
 var ratVx = 1;
+var context;
+var ratMoveAnimation;
+var ratDeathAnimation;
+var bmpAnimationIdle;
+var bmpAnimationIdleR;
+var fireAnimation;
 
+
+if(firstTime){
 window.onload = function(){
         dead = false;
         background.onload = handleImageLoad;
@@ -109,8 +63,10 @@ window.onload = function(){
         bitmapWell.y = 100;
         stage.addChild(bitmapWell);
         stage.update();
-        // context.stroke();
-}
+        context.stroke();
+    createjs.Ticker.on("tick", tick);
+    createjs.Ticker.off();
+};
 
 function resetStage(){
         stage.removeAllChildren();
@@ -129,21 +85,48 @@ function resetStage(){
         var bitmapWell = new createjs.Bitmap(well);
         bitmapWell.x = 100;
         bitmapWell.y = 100;
+        context.clearRect(0, 0, canvas.width, canvas.height);
         stage.addChild(bitmapWell);
         stage.update();    
 }
 
-function init() {
-    ratVx = 1;
-    this.document.onkeydown = keydown;
-    this.document.onkeyup = keyup;
-    started = true;
+
+function reset() {
+    document.getElementById("Dead").innerHTML= "";
+    if(score >= highScore){
+        // ratVx = 1;
+        highScore = score;
+        document.getElementById("highScore").innerHTML = highScore;
+    }
     if(dead){
+        dead = false;
+        ratDead = false;
+        // stage.update();        
+        // init();
+        // createjs.Ticker.off();
+    }
+    score = 0;
+    document.getElementById("score").innerHTML = score;
+    stage.removeAllChildren();
+    createjs.Ticker.removeAllEventListeners();
+    // stage.update();
+    // context.clearRect(0, 0, canvas.width, canvas.height);
+    window.onload();
+}
+
+function init() {
+    if(dead){
+        reset();
+    }
+    if(started){
         reset();
     }
     else{
         document.getElementById("Dead").innerHTML= "";
-    }
+    ratVx = 1;
+    this.document.onkeydown = keydown;
+    this.document.onkeyup = keyup;
+    started = true;
     // pauseMonster = false;
     swap = true;
     canvas = document.getElementById("testCanvas");
@@ -175,39 +158,16 @@ function init() {
     imgRatDeath.onload = handleImageLoad;
     imgRatDeath.onerror = handleImageError;
     imgRatDeath.src = "rat-dying.png";
-}
-
-function reset() {
-    document.getElementById("Dead").innerHTML= "";
-    if(!dead && score >= highScore){
-        ratVx = 1;
-        highScore = score;
-        document.getElementById("highScore").innerHTML = highScore;
-    }
-    if(dead){
-        dead = false;
-        stage.removeAllChildren();
-        ratVx = 1;
-        score = 0;
-        document.getElementById("score").innerHTML= score;
-        dead = false;
-        ratDead = false;
-        stage.removeAllChildren();
-        createjs.Ticker.removeAllEventListeners();
-        stage.update();        
-        resetStage();
-        // init();
-    }
-    // ratVx = 1;
-    score = 0;
-    document.getElementById("score").innerHTML= score;
-    dead = false;
-    ratDead = false;
+    // else{
     stage.removeAllChildren();
     createjs.Ticker.removeAllEventListeners();
-    stage.update();
-    resetStage();
+    createjs.Ticker.off();
+    createjs.Ticker.on("tick", tick);
+    createjs.Ticker.useRAF = true;
+    createjs.Ticker.setFPS(60);
 }
+    // }
+};
 
 function handleImageLoad(e) {
 	// imgsLoaded++;
@@ -217,6 +177,7 @@ function handleImageLoad(e) {
 }
 
 function startGame() {
+    // firstTime = false;
     ratVx = 1;
     // started = true;
 	// create a new stage and point it at our canvas:
@@ -309,7 +270,7 @@ function startGame() {
     // create a BitmapAnimation instance to display and play back the sprite sheet:
 	bmpAnimation = new createjs.Sprite(spriteSheet, "walk");
     ratMoveAnimation = new createjs.Sprite(spriteSheetRat, "walk");
-    ratMoveAnimation.name = "testRat"
+    ratMoveAnimation.name = "testRat";
     // ratMoveAnimation.vX = 3;
     ratMoveAnimation.x = 500;
     ratMoveAnimation.y = 0;
@@ -358,9 +319,11 @@ function startGame() {
     // we want to do some work before we update the canvas,
     // otherwise we could use Ticker.addListener(stage);
     // createjs.Ticker.addEventListener(window, tick);
+    if(started){
     createjs.Ticker.on("tick", tick);
-    createjs.Ticker.useRAF = true;
+    // createjs.Ticker.useRAF = true;
     createjs.Ticker.setFPS(60);
+    }
 }
 
 var left;
@@ -406,7 +369,7 @@ function makeRat(){
     console.log(rando);
 
     ratMoveAnimation = new createjs.Sprite(spriteSheetRat, "walk");
-    ratMoveAnimation.name = "testRat"
+    ratMoveAnimation.name = "testRat";
     // ratMoveAnimation.vX = 3;
     ratMoveAnimation.x = 500;
     ratMoveAnimation.y = rando;
@@ -424,7 +387,7 @@ function fire(e){
             fireAnimation.gotoAndPlay("fire");
             stage.addChild(fireAnimation);
         }
-    };
+    }
 function keydown(event) {
     walking = true;
     pauseMonster = false;
@@ -685,8 +648,8 @@ if(!dead){
             ratDeathAnimation.gotoAndPlay("death");
             stage.addChild(ratDeathAnimation);
             }
-            if(score % 100 == 0 && score !== 0){
-                ratVx += 0.1;
+            if(score % 100 === 0 && score !== 0){
+                ratVx += 0.05;
             }
             makeRat();
         }
@@ -753,38 +716,5 @@ if(!dead){
     // update the stage:
     stage.update();
 }
-
-
-	</script>
-</head>
-<body>
-<div id="container">
-    <span id="header">Mummy Vs. Rats</span>
-	<canvas id="testCanvas" width="500" height="300"></canvas>
-    <div class="col-md-4">
-    	<button id="Start" class="btn btn-primary btn-lg sharp center" onclick="init();">Start</button>
-    	<button id="Reset" class="btn btn-primary btn-lg sharp center" onclick="reset();">Reset</button>
-    </div>
-    <div class="col-md-8" id="text">
-    <p id="scoreText">Score: <span id="score">0</span></p>
-    <p id="hScoreText">High Score: <span id="highScore">0</span></p>
-    <p id="deadText"><span id="Dead"></span></p>
-    </div>
-    <div class="col-md-12" id="instruction">
-    <h4>Controls:</h4>
-    <p>Move with the arrow keys, Shoot fireballs with Ctrl</p>
-    </div>
-    <div class="col-md-12" id="rules">
-    <h4>Rules:</h4>
-    <p>Killing a rat earns 25 points</p>
-    <p>If a rat makes it past you, you loose 25 points</p>
-    <p>Rats become faster the higher your score</p>
-    <p>Fireballs only recharge when:</p>
-    <ul>
-        <li>Upon killing a rat</li>
-        <li>Leaving the arena</li>
-    </ul>
-    </div>
-</div>
-</body>
-</html>
+// firstTime = false;
+}
